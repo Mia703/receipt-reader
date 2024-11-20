@@ -30,30 +30,6 @@ export default function WebcamCapture() {
     navigator.mediaDevices.enumerateDevices().then(handleDevices);
   }, [handleDevices]);
 
-  // const [deviceNames, setDeviceNames] = useState<MediaDeviceInfo[] | null>(
-  //   null,
-  // );
-  // const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
-
-  // const handleDevices = useCallback((mediaDevices: MediaDeviceInfo[]) => {
-  //   console.log("unfiltered devices");
-  //   console.log(mediaDevices);
-  //   // Filter for video input devices
-  //   const videoDevices = mediaDevices.filter(
-  //     ({ kind }) => kind === "videoinput",
-  //   );
-
-  //   console.log("filtered devices");
-  //   console.log(videoDevices);
-  //   setDeviceNames(mediaDevices);
-  // }, []);
-
-  // useEffect(() => {
-  //   navigator.mediaDevices
-  //     .enumerateDevices()
-  //     .then((devices) => handleDevices(devices as MediaDeviceInfo[]))
-  //     .catch((error) => console.error("Error enumerating devices:", error));
-  // }, [handleDevices]);
 
   // ----- taking a photo
   const webcamRef = useRef<Webcam>(null);
@@ -90,6 +66,7 @@ export default function WebcamCapture() {
               ref={webcamRef}
               mirrored={true}
               screenshotFormat="image/png"
+              videoConstraints={videoConstraints}
             />
           </div>
         )}
