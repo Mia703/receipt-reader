@@ -12,53 +12,52 @@ type MediaDeviceInfo = {
 };
 
 export default function WebcamCapture() {
-  const webcamRef = useRef<Webcam>(null);
-  // store the image data after the screen shot has been taken
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
-
+  // ----- toggling cameras
   const videoConstraints = {
     facingMode: { exact: "environment" },
   };
 
-  const [deviceNames, setDeviceNames] = useState<MediaDeviceInfo[] | null> (null);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[] | null>([]);
 
   const handleDevices = useCallback((mediaDevices: MediaDeviceInfo[]) => {
-    console.log('unfiltered devices');
-    console.log(mediaDevices);
-    // Filter for video input devices
-    const videoDevices = mediaDevices.filter(
-      ({ kind }) => kind === "videoinput",
-    );
-    
-    console.log('filtered devices');
-    console.log(videoDevices);
-    setDeviceNames(mediaDevices);
-
-    if (videoDevices.length > 0) {
-      // Find the back camera (usually labeled "back")
-      const backCamera = videoDevices.find((device) =>
-        device.label.toLowerCase().includes("back"),
-      );
-
-      // Find the front camera (fallback)
-      const frontCamera = videoDevices.find((device) =>
-        device.label.toLowerCase().includes("front"),
-      );
-
-      // Prioritize the back camera if available, otherwise use the front camera
-      setSelectedDeviceId(
-        backCamera?.deviceId || frontCamera?.deviceId || null,
-      );
-    }
+    // setDevices(mediaDevices.filter(
+    //   ({kind}) => kind === 'videoinput'
+    // ))
+    setDevices(mediaDevices)
   }, []);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) => handleDevices(devices as MediaDeviceInfo[]))
-      .catch((error) => console.error("Error enumerating devices:", error));
+    navigator.mediaDevices.enumerateDevices().then(handleDevices);
   }, [handleDevices]);
+
+  // const [deviceNames, setDeviceNames] = useState<MediaDeviceInfo[] | null>(
+  //   null,
+  // );
+  // const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+
+  // const handleDevices = useCallback((mediaDevices: MediaDeviceInfo[]) => {
+  //   console.log("unfiltered devices");
+  //   console.log(mediaDevices);
+  //   // Filter for video input devices
+  //   const videoDevices = mediaDevices.filter(
+  //     ({ kind }) => kind === "videoinput",
+  //   );
+
+  //   console.log("filtered devices");
+  //   console.log(videoDevices);
+  //   setDeviceNames(mediaDevices);
+  // }, []);
+
+  // useEffect(() => {
+  //   navigator.mediaDevices
+  //     .enumerateDevices()
+  //     .then((devices) => handleDevices(devices as MediaDeviceInfo[]))
+  //     .catch((error) => console.error("Error enumerating devices:", error));
+  // }, [handleDevices]);
+
+  // ----- taking a photo
+  const webcamRef = useRef<Webcam>(null);
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current!.getScreenshot();
@@ -72,24 +71,10 @@ export default function WebcamCapture() {
   return (
     <div className="container">
       <div>
-        <h1>Selected Camera</h1>
-        {selectedDeviceId ? (
-          <div>
-            <p>Using device ID: {selectedDeviceId}</p>
-            <p>
-              filtered devices{" "}
-              {deviceNames?.map((device) => <span>{device.kind}</span>)}
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p>No camera detected</p>
-            <p>
-              filtered devices{" "}
-              {deviceNames?.map((device) => <span>{device.kind}</span>)}
-            </p>
-          </div>
-        )}
+        <h1>Checking for devices</h1>
+        {devices? devices.map((item, index) => (
+          <p>{index}-- deviceID: "{item.deviceId}", deviceKind: "{item.kind}", deviceLabel: "{item.label}", deviceGroupID: "{item.groupId}"</p>
+        )) : <p>no devices to share</p>}
       </div>
 
       <div className="image-container flex justify-center">
