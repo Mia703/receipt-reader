@@ -76,14 +76,18 @@ export default function WebcamCapture() {
         {selectedDeviceId ? (
           <div>
             <p>Using device ID: {selectedDeviceId}</p>
-            <p>filtered devices {deviceNames?.toLocaleString()}</p>
+            <p>
+              filtered devices{" "}
+              {deviceNames?.map((device) => <span>{device.kind}</span>)}
+            </p>
           </div>
         ) : (
           <div>
             <p>No camera detected</p>
-            <p>filtered devices {deviceNames?.map(device => (
-              <span>{device.kind}</span>
-            ))}</p>
+            <p>
+              filtered devices{" "}
+              {deviceNames?.map((device) => <span>{device.kind}</span>)}
+            </p>
           </div>
         )}
       </div>
