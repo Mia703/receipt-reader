@@ -1,52 +1,62 @@
 "use client";
+import { Button } from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
 export default function WebcamCapture() {
-	const webcamRef = useRef(null);
-	// store the image data after the screen shot has been taken
-	const [imgSrc, setImgSrc] = useState(null);
+  const webcamRef = useRef(null);
+  // store the image data after the screen shot has been taken
+  const [imgSrc, setImgSrc] = useState(null);
 
-	const capture = useCallback(() => {
-		if (webcamRef.current !== null) {
-			const imageSrc = webcamRef.current.getScreenshot();
-			setImgSrc(imageSrc);
-		}
-		setImgSrc(null);
-	}, [webcamRef]);
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setImgSrc(imageSrc);
+  }, [webcamRef]);
 
-	const retake = () => {
-		setImgSrc(null);
-	};
+  const retake = () => {
+    setImgSrc(null);
+  };
 
-	return (
-		<div className="container">
-			<Webcam
-				width={600}
-				height={600}
-				ref={webcamRef}
-				mirrored={true}
-				screenshotFormat="image/png"
-			/>
+  return (
+    <div className="container">
+      <div className="image-container flex justify-center">
+        {imgSrc ? (
+          <div className="image-container w-fit overflow-hidden rounded-lg">
+            <img src={imgSrc} alt="Web Camera Image" />
+          </div>
+        ) : (
+          <div className="image-container w-fit overflow-hidden rounded-lg">
+            <Webcam
+              width={600}
+              height={600}
+              ref={webcamRef}
+              mirrored={true}
+              screenshotFormat="image/png"
+            />
+          </div>
+        )}
+      </div>
 
-			<div className="image-container">
-				{imgSrc ? (
-					<div>
-						<img src={imgSrc} alt="webcam" />
-						<p>{imgSrc}</p>
-					</div>
-				) : (
-					<p>no image</p>
-				)}
-			</div>
-
-			<div className="button-container">
-				{imgSrc ? (
-					<button onClick={retake}>retake</button>
-				) : (
-					<button onClick={capture}>capture</button>
-				)}
-			</div>
-		</div>
-	);
+      <div className="button-container my-4 w-full text-center">
+        {imgSrc ? (
+          <Button
+            onClick={retake}
+            variant="contained"
+            endIcon={<CameraAltIcon />}
+          >
+            Retake
+          </Button>
+        ) : (
+          <Button
+            onClick={capture}
+            variant="contained"
+            endIcon={<CameraAltIcon />}
+          >
+            Capture
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 }
