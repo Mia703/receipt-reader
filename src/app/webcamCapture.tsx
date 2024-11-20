@@ -13,12 +13,14 @@ type MediaDeviceInfo = {
 
 export default function WebcamCapture() {
   // ----- toggling cameras
+  // TODO: toggles back camera
   const videoConstraints = {
     facingMode: { exact: "environment" },
   };
 
   const [devices, setDevices] = useState<MediaDeviceInfo[] | null>([]);
 
+  // TODO: should display all cameras on the device, but seems to me like it only displays the camera you're using
   const handleDevices = useCallback((mediaDevices: MediaDeviceInfo[]) => {
     // setDevices(mediaDevices.filter(
     //   ({kind}) => kind === 'videoinput'
@@ -47,6 +49,7 @@ export default function WebcamCapture() {
   return (
     <div className="container">
       <div>
+        {/* TODO: displays the list of cameras found on device; seems to only display the camera you're using tho... */}
         <h1>Checking for devices</h1>
         {devices? devices.map((item, index) => (
           <p>{index}-- deviceID: "{item.deviceId}", deviceKind: "{item.kind}", deviceLabel: "{item.label}", deviceGroupID: "{item.groupId}"</p>
@@ -64,6 +67,7 @@ export default function WebcamCapture() {
               width={600}
               height={600}
               ref={webcamRef}
+              // TODO: turn on mirroring for front camera, turn off mirroring for back camera
               // mirrored={true}
               screenshotFormat="image/png"
               videoConstraints={videoConstraints}
