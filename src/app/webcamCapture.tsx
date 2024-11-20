@@ -64,7 +64,7 @@ export default function WebcamCapture() {
               width={600}
               height={600}
               ref={webcamRef}
-              mirrored={true}
+              // mirrored={true}
               screenshotFormat="image/png"
               videoConstraints={videoConstraints}
             />
