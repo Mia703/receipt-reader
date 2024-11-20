@@ -33,7 +33,7 @@ export default function WebcamCapture() {
     
     console.log('filtered devices');
     console.log(videoDevices);
-    setDeviceNames(videoDevices);
+    setDeviceNames(mediaDevices);
 
     if (videoDevices.length > 0) {
       // Find the back camera (usually labeled "back")
