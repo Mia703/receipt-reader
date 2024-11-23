@@ -5,15 +5,8 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 
 export default function WebcamCapture() {
-  // ----- toggling cameras
+  // ----- toggles between front and back cameras
   const [facingCamera, setFacingCamera] = useState<boolean>(true);
-  console.log(`initial state: ${facingCamera}`);
-
-  const toggleCamera = () => {
-    setFacingCamera(!facingCamera);
-    console.log(facingCamera);
-  };
-
 
   // ----- taking a photo
   const webcamRef = useRef<Webcam>(null);
@@ -37,6 +30,7 @@ export default function WebcamCapture() {
           </div>
         ) : (
           <div className="image-container w-fit overflow-hidden rounded-lg">
+            {/* rebuilds camera component based on toggle */}
             {facingCamera ? (
               <Webcam
                 width={600}

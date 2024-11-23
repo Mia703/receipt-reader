@@ -1,0 +1,1 @@
+// TODO: pass image information here to be analysed by OCR
