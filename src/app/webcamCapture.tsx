@@ -4,33 +4,15 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useCallback, useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 
-type MediaDeviceInfo = {
-  deviceId: string;
-  kind: string;
-  label: string;
-  groupId: string;
-};
-
 export default function WebcamCapture() {
   // ----- toggling cameras
-  // TODO: toggles back camera
-  const videoConstraints = {
-    facingMode: { exact: "environment" },
+  const [facingCamera, setFacingCamera] = useState<boolean>(true);
+  console.log(`initial state: ${facingCamera}`);
+
+  const toggleCamera = () => {
+    setFacingCamera(!facingCamera);
+    console.log(facingCamera);
   };
-
-  const [devices, setDevices] = useState<MediaDeviceInfo[] | null>([]);
-
-  // TODO: should display all cameras on the device, but seems to me like it only displays the camera you're using
-  const handleDevices = useCallback((mediaDevices: MediaDeviceInfo[]) => {
-    // setDevices(mediaDevices.filter(
-    //   ({kind}) => kind === 'videoinput'
-    // ))
-    setDevices(mediaDevices)
-  }, []);
-
-  useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then(handleDevices);
-  }, [handleDevices]);
 
 
   // ----- taking a photo
@@ -48,30 +30,34 @@ export default function WebcamCapture() {
 
   return (
     <div className="container">
-      <div>
-        {/* TODO: displays the list of cameras found on device; seems to only display the camera you're using tho... */}
-        <h1>Checking for devices</h1>
-        {devices? devices.map((item, index) => (
-          <p>{index}-- deviceID: "{item.deviceId}", deviceKind: "{item.kind}", deviceLabel: "{item.label}", deviceGroupID: "{item.groupId}"</p>
-        )) : <p>no devices to share</p>}
-      </div>
-
-      <div className="image-container flex justify-center">
+      <div className="capture-container flex justify-center">
         {imgSrc ? (
           <div className="image-container w-fit overflow-hidden rounded-lg">
             <img src={imgSrc} alt="Web Camera Image" />
           </div>
         ) : (
           <div className="image-container w-fit overflow-hidden rounded-lg">
-            <Webcam
-              width={600}
-              height={600}
-              ref={webcamRef}
-              // TODO: turn on mirroring for front camera, turn off mirroring for back camera
-              // mirrored={true}
-              screenshotFormat="image/png"
-              videoConstraints={videoConstraints}
-            />
+            {facingCamera ? (
+              <Webcam
+                width={600}
+                height={600}
+                ref={webcamRef}
+                mirrored={facingCamera ? true : false}
+                screenshotFormat="image/png"
+              />
+            ) : (
+              <Webcam
+                width={600}
+                height={600}
+                ref={webcamRef}
+                mirrored={facingCamera ? true : false}
+                screenshotFormat="image/png"
+                videoConstraints={{
+                  facingMode: { exact: 'environment'}
+                }}
+              />
+            )}
+            
           </div>
         )}
       </div>
@@ -86,13 +72,21 @@ export default function WebcamCapture() {
             Retake
           </Button>
         ) : (
-          <Button
-            onClick={capture}
-            variant="contained"
-            endIcon={<CameraAltIcon />}
-          >
-            Capture
-          </Button>
+          <div>
+            <Button
+              onClick={capture}
+              variant="contained"
+              endIcon={<CameraAltIcon />}
+            >
+              Capture
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => setFacingCamera((prev) => !prev)}
+            >
+              Toggle Camera
+            </Button>
+          </div>
         )}
       </div>
     </div>
