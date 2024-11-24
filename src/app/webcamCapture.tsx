@@ -8,18 +8,58 @@ export default function WebcamCapture() {
   // ----- toggles between front and back cameras
   const [facingCamera, setFacingCamera] = useState<boolean>(true);
 
-  // ----- taking a photo
+  // ----- takes a photo
   const webcamRef = useRef<Webcam>(null);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current!.getScreenshot();
     setImgSrc(imageSrc);
+    // process image if not null
+    processImage(imageSrc!);
   }, [webcamRef]);
 
   const retake = () => {
     setImgSrc(null);
   };
+
+  // --- processing the photo
+  const [processedData, setProcessedData] = useState<string | null>(null);
+  const api_url = "https://api.ocr.space/parse/image";
+  const key = process.env.NEXT_PUBLIC_OCR_SPACE;
+
+  const processImage = useCallback(async (imageData: string) => {
+    const formData = new FormData();
+    formData.append("apikey", key as string);
+
+    formData.append("base64Image", imageData);
+
+    formData.append("language", "eng");
+    formData.append("detectOrientation", "true");
+    formData.append("isTable", "true");
+
+    const request_options = {
+      method: "POST",
+      body: formData,
+    };
+
+    const api_response = await fetch(api_url, request_options)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not okay");
+        }
+        return response.text();
+      })
+      .then((data) => {
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error: ", error);
+      });
+
+    // return api_response if not void
+    setProcessedData(api_response!);
+  }, []);
 
   return (
     <div className="container">
@@ -36,7 +76,7 @@ export default function WebcamCapture() {
                 width={600}
                 height={600}
                 ref={webcamRef}
-                mirrored={facingCamera ? true : false}
+                mirrored={true}
                 screenshotFormat="image/png"
               />
             ) : (
@@ -44,14 +84,13 @@ export default function WebcamCapture() {
                 width={600}
                 height={600}
                 ref={webcamRef}
-                mirrored={facingCamera ? true : false}
+                mirrored={false}
                 screenshotFormat="image/png"
                 videoConstraints={{
-                  facingMode: { exact: 'environment'}
+                  facingMode: { exact: "environment" },
                 }}
               />
             )}
-            
           </div>
         )}
       </div>
@@ -81,6 +120,13 @@ export default function WebcamCapture() {
               Toggle Camera
             </Button>
           </div>
+        )}
+      </div>
+      <div className="w-full">
+        {processedData ? (
+          <p className="break-all">{processedData}</p>
+        ) : (
+          <p>No data returned.</p>
         )}
       </div>
     </div>
